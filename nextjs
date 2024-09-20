@@ -36,7 +36,7 @@ pipeline {
             steps {
                 echo 'Deploying Docker container...'
                 sh '''
-                    docker run -d -p 3530:3000 --name nextjs-test nextjs-test1:v1
+                    docker run -d -p 3531:3000 --name nextjs-test1 nextjs-test1:v1
                     docker ps
                     docker ps -a
                 '''
