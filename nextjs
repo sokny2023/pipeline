@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Git clone') {
+            steps {
+                echo 'Cloning the repository...'
+                git branch: 'main', url: 'https://github.com/sokny2023/nextjs-pieline.git'
+                sh '''
+                    ls -l
+                    pwd
+                '''
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing dependencies...'
+                sh '''
+                    npm install
+                '''
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building Docker image...'
+                sh '''
+                    docker build -t nextjs-test1:v1 -f Dockerfile .
+                    docker images
+                '''
+            }
+        }
+        
+        stage('Deploy') {
+            steps {
+                echo 'Deploying Docker container...'
+                sh '''
+                    docker run -d -p 3530:3000 --name nextjs-test nextjs-test1:v1
+                    docker ps
+                    docker ps -a
+                '''
+                echo 'Fetching public IP address...'
+                sh '''
+                    curl ifconfig.me
+                '''
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+        }
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}
